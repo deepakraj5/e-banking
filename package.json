@@ -1,0 +1,27 @@
+{
+  "name": "e-banking",
+  "version": "1.0.0",
+  "description": "WAD Java Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deepakraj5/e-banking.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deepakraj5/e-banking/issues"
+  },
+  "homepage": "https://github.com/deepakraj5/e-banking#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.5"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9"
+  }
+}
