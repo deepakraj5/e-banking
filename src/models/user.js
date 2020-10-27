@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
+const Transaction = require('./transaction')
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -29,6 +31,11 @@ const userSchema = new mongoose.Schema({
                 throw new Error('account number must me 8 to 10 digit')
             }
         }
+    },
+    balance: {
+        type: Number,
+        required: false,
+        default: 1000
     },
     gender: {
         type: String,
@@ -72,16 +79,61 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,
         minlength: 8,
-        maxlength: 16,
         validate(value){
             if(value.toLowerCase().includes('password')){
                 throw new Error('password should not contain word password')
             }
         }
-    }
+    },
+    tokens: [{
+        token: {
+            type: String,
+            required: true
+        }
+    }]
 }, {
     timestamps: true
 })
+
+userSchema.virtual('transactions', {
+    ref: 'Transaction',
+    localField: 'accountnumber',
+    foreignField: 'owner'
+})
+
+userSchema.methods.toJSON = function(){
+    const user = this
+    const userObject = user.toObject()
+
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject
+}
+
+userSchema.methods.generateAuthToken = async function(){
+    const user = this
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRESIN })
+    user.tokens = user.tokens.concat({ token })
+
+    return token
+}
+
+userSchema.statics.findByCredentials = async (email, password) => {
+    const user = await User.findOne({ email })
+
+    if(!user){
+        throw new Error('invalid credentials')
+    }
+
+    const verified = await bcrypt.compare(password, user.password)
+
+    if(!verified){
+        throw new Error('invalid credentials')
+    }
+
+    return user
+}
 
 userSchema.pre('save', async function(next){
     const user = this

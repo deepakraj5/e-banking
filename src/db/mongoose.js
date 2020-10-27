@@ -8,5 +8,5 @@ mongoose.connect(process.env.DB, {
 }).then(() => {
     console.log('db connected')
 }).catch((e) => {
-    console.log(e)
+    console.log('db not connected')
 })
