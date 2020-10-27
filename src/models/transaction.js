@@ -22,8 +22,6 @@ const transactionModel = new mongoose.Schema({
     timestamps: true
 })
 
-transactionModel.methods.
-
 const Transaction = mongoose.model('Transaction', transactionModel)
 
 module.exports = Transaction
