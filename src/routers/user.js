@@ -4,6 +4,17 @@ const auth = require('../middleware/auth')
 
 const router = express.Router()
 
+const errorMessage = (error) => {
+    let errors = {}
+    const messages = error.message.substring(error.message.indexOf(':') + 1).trim()
+    const message = messages.split(',')
+    message.forEach(msg => {
+        let [key, value] = msg.split(':').map(m => m.trim())
+        errors[key] = value
+    })
+    return errors
+}
+
 router.post('/signup', async (req, res) => {
     try{
         const user = new User(req.body)
@@ -11,7 +22,7 @@ router.post('/signup', async (req, res) => {
 
         res.status(201).send()
     }catch(e){
-        res.status(400).send(e)
+        res.status(400).send(errorMessage(e))
     }
 })
 

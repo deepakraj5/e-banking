@@ -15,7 +15,6 @@ const userSchema = new mongoose.Schema({
         required: true,
         lowercase: true,
         trim: true,
-        unique: true,
         validate(value){
             if(!validator.isEmail(value)){
                 throw new Error('email not valid')
@@ -25,7 +24,6 @@ const userSchema = new mongoose.Schema({
     accountnumber: {
         type: Number,
         required: true,
-        unique: true,
         validate(value){
             if(value.toString().length < 8 || value.toString().length > 10){
                 throw new Error('account number must me 8 to 10 digit')
@@ -53,9 +51,8 @@ const userSchema = new mongoose.Schema({
     phonenumber: {
         type: Number,
         required: true,
-        unique: true,
         validate(value){
-            if(value.toString().length < 10 || value.toString().length > 10){
+            if(value.toString().length < 12 || value.toString().length > 12 ){
                 throw new Error('phone number invalid')
             }
         }
@@ -94,6 +91,21 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+
+userSchema.path('email').validate(async (email) => {
+    const emailCount = await mongoose.models.User.countDocuments({ email })
+    return !emailCount
+}, 'Email alredy exists')
+
+userSchema.path('accountnumber').validate(async (accountnumber) => {
+    const accountnumberCount = await mongoose.models.User.countDocuments({ accountnumber })
+    return !accountnumberCount
+}, 'Account number alredy exists')
+
+userSchema.path('phonenumber').validate(async (phonenumber) => {
+    const phonenumberCount = await mongoose.models.User.countDocuments({ phonenumber })
+    return !phonenumberCount
+}, 'Phone number alredy exists')
 
 userSchema.virtual('transactions', {
     ref: 'Transaction',
