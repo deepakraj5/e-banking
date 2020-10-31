@@ -81,13 +81,7 @@ const userSchema = new mongoose.Schema({
                 throw new Error('password should not contain word password')
             }
         }
-    },
-    tokens: [{
-        token: {
-            type: String,
-            required: true
-        }
-    }]
+    }
 }, {
     timestamps: true
 })
@@ -126,7 +120,6 @@ userSchema.methods.toJSON = function(){
 userSchema.methods.generateAuthToken = async function(){
     const user = this
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRESIN })
-    user.tokens = user.tokens.concat({ token })
 
     return token
 }
